@@ -1,8 +1,9 @@
-﻿using e_AgendaMedica.Dominio.ModuloMedico;
+﻿using e_AgendaMedica.Dominio.Compartilhado;
+using e_AgendaMedica.Dominio.ModuloMedico;
 
 namespace e_AgendaMedica.Dominio.ModuloAtividade
 {
-    public class Atividade
+    public class Atividade : Entidade
     {
         public DateTime Data { get; set; }
         public TimeSpan HorarioInicio { get; set; }
@@ -16,6 +17,10 @@ namespace e_AgendaMedica.Dominio.ModuloAtividade
             HorarioTermino = horarioTermino;
             TipoAtividade = tipoAtividade;
             Medicos = medicos;
+        }
+        public Atividade()
+        {
+
         }
     }
 }

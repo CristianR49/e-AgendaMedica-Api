@@ -1,9 +1,9 @@
 ﻿namespace e_AgendaMedica.Dominio.Compartilhado
 {
-    public class EntidadeBase
+    public class Entidade
     {
         public Guid Id { get; set; }
-        public EntidadeBase()
+        public Entidade()
         {
             Id = Guid.NewGuid();
         }
