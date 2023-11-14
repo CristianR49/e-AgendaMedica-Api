@@ -2,6 +2,7 @@
 using e_AgendaMedica.Dominio.ModuloMedico;
 using e_AgendaMedica.Infra.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace eAgendaMedica.ConsoleApp
 {
@@ -13,8 +14,15 @@ namespace eAgendaMedica.ConsoleApp
 
             DbContextOptionsBuilder<eAgendaMedicaDbContext> optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
 
-            optionsBuilder.UseSqlServer(@"Data Source=(LOCALDB)\MSSQLLOCALDB;Initial Catalog=eAgendaMedica;Integrated Security=True");
+            IConfiguration configuracao = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
+            var connectionString = configuracao.GetConnectionString("SqlServer");
+
+            optionsBuilder.UseSqlServer(connectionString);
+            
             eAgendaMedicaDbContext dbContext = new eAgendaMedicaDbContext(optionsBuilder.Options);
 
             List<Medico> medicos = new List<Medico>();

@@ -1,6 +1,9 @@
 ﻿using e_AgendaMedica.Dominio.ModuloAtividade;
 using e_AgendaMedica.Dominio.ModuloMedico;
+using e_AgendaMedica.Infra.Orm.ModuloAtividade;
+using e_AgendaMedica.Infra.Orm.ModuloMedico;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace e_AgendaMedica.Infra.Orm.Compartilhado
 {
@@ -12,6 +15,24 @@ namespace e_AgendaMedica.Infra.Orm.Compartilhado
         {
         }
 
+        public eAgendaMedicaDbContext CreateDbContext(string [] args)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
+
+            IConfiguration configuracao = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var connectionString = configuracao.GetConnectionString("SqlServer");
+
+            optionsBuilder.UseSqlServer(connectionString);
+
+            var dbContext = new eAgendaMedicaDbContext(optionsBuilder.Options);
+
+            return dbContext;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
 
@@ -19,39 +40,9 @@ namespace e_AgendaMedica.Infra.Orm.Compartilhado
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Medico>(model =>
-            {
-                model.ToTable("TBMedico");
+            modelBuilder.ApplyConfiguration(new MapeadorMedicoOrm());
 
-                model.Property(x => x.Id).ValueGeneratedNever();
-
-                model.Property(x => x.Crm).IsRequired();
-            });
-
-            modelBuilder.Entity<Atividade>(model =>
-            {
-                model.ToTable("TBAtividade");
-
-                model.Property(x => x.Id).ValueGeneratedNever();
-
-                model.Property(x => x.Data).IsRequired();
-
-                model.Property(x => x.HorarioInicio).IsRequired();
-
-                model.Property(x => x.HorarioTermino).IsRequired();
-
-                model.Property(x => x.TipoAtividade)
-                .HasConversion<int>()
-                .IsRequired();
-
-                model.HasMany(x => x.Medicos)
-                .WithMany()
-                .UsingEntity(x => x.ToTable("TBAtividade_TBMedico"));
-
-
-            });
-
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new MapeadorAtividadeOrm());
 
         }
     }
