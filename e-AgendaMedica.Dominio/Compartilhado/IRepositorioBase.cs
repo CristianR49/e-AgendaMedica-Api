@@ -12,6 +12,6 @@ namespace e_AgendaMedica.Dominio.Compartilhado
         void Excluir(TEntidade registro);
         Task<bool> InserirAsync(TEntidade registro);
         Task<TEntidade> SelecionarPorIdAsync(Guid id);
-        Task<List<TEntidade>> SelecionarTodosAsync(Guid id);
+        Task<List<TEntidade>> SelecionarTodosAsync();
     }
 }

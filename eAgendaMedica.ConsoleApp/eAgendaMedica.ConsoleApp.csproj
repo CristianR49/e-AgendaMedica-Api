@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\e-AgendaMedica.Dominio\eAgendaMedica.Dominio.csproj" />
     <ProjectReference Include="..\e-AgendaMedica.Infra.Orm\eAgendaMedica.Infra.Orm.csproj" />
+    <ProjectReference Include="..\eAgendaMedica.Aplicacao\eAgendaMedica.Aplicacao.csproj" />
   </ItemGroup>
 
   <ItemGroup>

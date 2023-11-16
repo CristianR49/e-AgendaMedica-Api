@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Distribuição", "3 - Distribuição", "{CA304BC7-B196-46A0-96F1-938609EBD79F}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Distribuição", "2 - Distribuição", "{CA304BC7-B196-46A0-96F1-938609EBD79F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Aplicação", "2 - Aplicação", "{4D04C72D-83F7-4BBB-8C40-6A42EBE70192}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Aplicação", "3 - Aplicação", "{4D04C72D-83F7-4BBB-8C40-6A42EBE70192}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4 - Domínio", "4 - Domínio", "{5D537053-359D-41F6-ABE8-148627F8CA92}"
 EndProject

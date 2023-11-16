@@ -3,6 +3,7 @@ using e_AgendaMedica.Dominio.ModuloMedico;
 using e_AgendaMedica.Infra.Orm.Compartilhado;
 using e_AgendaMedica.Infra.Orm.ModuloAtividade;
 using e_AgendaMedica.Infra.Orm.ModuloMedico;
+using eAgendaMedica.Aplicacao.ModuloMedico;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -37,9 +38,13 @@ namespace eAgendaMedica.ConsoleApp
 
             var repositorioAtividade = new RepositorioAtividadeOrm(dbContext);
 
-            repositorioMedico.InserirAsync(medico);
+            ServicoMedico servicoMedico = new ServicoMedico(repositorioMedico, dbContext);
 
-            repositorioAtividade.InserirAsync(atividade);
+            servicoMedico.InserirAsync(medico);
+
+            ServicoMedico servicoMedico = new ServicoMedico(repositorioMedico, dbContext);
+
+            servicoMedico.InserirAsync(medico);
 
             dbContext.SaveChanges();
         }

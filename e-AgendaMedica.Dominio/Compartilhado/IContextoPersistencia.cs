@@ -1,6 +1,6 @@
 ﻿namespace e_AgendaMedica.Dominio.Compartilhado
 {
-    internal interface IContextoPersistencia
+    public interface IContextoPersistencia
     {
         Task<bool> GravarAsync();
     }
