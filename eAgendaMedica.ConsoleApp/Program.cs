@@ -1,6 +1,8 @@
 ﻿using e_AgendaMedica.Dominio.ModuloAtividade;
 using e_AgendaMedica.Dominio.ModuloMedico;
 using e_AgendaMedica.Infra.Orm.Compartilhado;
+using e_AgendaMedica.Infra.Orm.ModuloAtividade;
+using e_AgendaMedica.Infra.Orm.ModuloMedico;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -10,7 +12,7 @@ namespace eAgendaMedica.ConsoleApp
     {
         static void Main(string[] args)
         {
-            Medico medico = new Medico("aaaa");
+            Medico medico = new Medico("aaaa2");
 
             DbContextOptionsBuilder<eAgendaMedicaDbContext> optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
 
@@ -29,9 +31,15 @@ namespace eAgendaMedica.ConsoleApp
 
             medicos.Add(medico);
 
-            Atividade atividade = new Atividade(new DateTime(1999, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
-            dbContext.Atividades.Add(atividade);
+            var repositorioMedico = new RepositorioMedicoOrm(dbContext);
+
+            var repositorioAtividade = new RepositorioAtividadeOrm(dbContext);
+
+            repositorioMedico.InserirAsync(medico);
+
+            repositorioAtividade.InserirAsync(atividade);
 
             dbContext.SaveChanges();
         }

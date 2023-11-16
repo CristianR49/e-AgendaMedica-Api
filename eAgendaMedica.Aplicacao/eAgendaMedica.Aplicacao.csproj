@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Compartilhado\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\e-AgendaMedica.Dominio\eAgendaMedica.Dominio.csproj" />
+  </ItemGroup>
+
 </Project>

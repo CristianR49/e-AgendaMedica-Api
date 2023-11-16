@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace e_AgendaMedica.Infra.Orm.ModuloAtividade
 {
-    public class RepositorioAtividadeOrm : RepositorioBase<Atividade>
+    public class RepositorioAtividadeOrm : RepositorioBase<Atividade>, IRepositorioAtividade
     {
         public RepositorioAtividadeOrm(eAgendaMedicaDbContext dbContext) : base(dbContext)
         {
