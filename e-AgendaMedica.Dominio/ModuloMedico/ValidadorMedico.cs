@@ -14,9 +14,7 @@ namespace e_AgendaMedica.Dominio.ModuloMedico
             RuleFor(x => x.Crm)
                 .NotNull()
                 .NotEmpty()
-                .MinimumLength(8)
-                .MaximumLength(8)
-                .Matches(@"/^\d{5}-[A-Z]{2}$/");
+                .Matches(@"^\d{5}-[A-Z]{2}$");
         }
     }
 }

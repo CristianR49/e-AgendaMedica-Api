@@ -3,7 +3,7 @@ using e_AgendaMedica.Dominio.ModuloMedico;
 using e_AgendaMedica.Infra.Orm.Compartilhado;
 using e_AgendaMedica.Infra.Orm.ModuloMedico;
 using eAgendaMedica.Aplicacao.ModuloMedico;
-using eAgendaMedica.WebApi.Profiles;
+using eAgendaMedica.WebApi.Config.Profiles;
 using Microsoft.EntityFrameworkCore;
 
 namespace eAgendaMedica.WebApi
