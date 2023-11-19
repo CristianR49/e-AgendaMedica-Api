@@ -1,4 +1,5 @@
-﻿using e_AgendaMedica.Dominio.ModuloAtividade;
+﻿using e_AgendaMedica.Dominio.Compartilhado;
+using e_AgendaMedica.Dominio.ModuloAtividade;
 using e_AgendaMedica.Infra.Orm.Compartilhado;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace e_AgendaMedica.Infra.Orm.ModuloAtividade
 {
     public class RepositorioAtividadeOrm : RepositorioBase<Atividade>, IRepositorioAtividade
     {
-        public RepositorioAtividadeOrm(eAgendaMedicaDbContext dbContext) : base(dbContext)
+        public RepositorioAtividadeOrm(IContextoPersistencia dbContext) : base(dbContext)
         {
         }
     }
