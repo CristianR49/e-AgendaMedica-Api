@@ -7,6 +7,8 @@ using eAgendaMedica.Aplicacao.ModuloAtividade;
 using eAgendaMedica.Aplicacao.ModuloMedico;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.SqlServer.Server;
+using System.Globalization;
 
 namespace eAgendaMedica.ConsoleApp
 {
@@ -14,7 +16,12 @@ namespace eAgendaMedica.ConsoleApp
     {
         static void Main(string[] args)
         {
-            Medico medico = new Medico("33333-CC");
+            TesteCadastro();
+        }
+
+        private static void TesteCadastro()
+        {
+            Medico medico = new Medico("Antonio", "33333-CC");
 
             DbContextOptionsBuilder<eAgendaMedicaDbContext> optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
 
@@ -26,14 +33,14 @@ namespace eAgendaMedica.ConsoleApp
             var connectionString = configuracao.GetConnectionString("SqlServer");
 
             optionsBuilder.UseSqlServer(connectionString);
-            
+
             eAgendaMedicaDbContext dbContext = new eAgendaMedicaDbContext(optionsBuilder.Options);
 
             List<Medico> medicos = new List<Medico>();
 
             medicos.Add(medico);
 
-            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             dbContext.Add(medico);
 
@@ -41,11 +48,11 @@ namespace eAgendaMedica.ConsoleApp
 
             //ServicoAtividade servicoAtividade = new ServicoAtividade(repositorioAtividade, dbContext);
 
-            
+
 
             //servicoMedico.InserirAsync(medico);
 
-            
+
 
             //servicoAtividade.InserirAsync(atividade);
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using e_AgendaMedica.Infra.Orm.Compartilhado;
 
@@ -11,9 +12,11 @@ using e_AgendaMedica.Infra.Orm.Compartilhado;
 namespace e_AgendaMedica.Infra.Orm.Migrations
 {
     [DbContext(typeof(eAgendaMedicaDbContext))]
-    partial class eAgendaMedicaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231121222302_AtualizacaoAtividade")]
+    partial class AtualizacaoAtividade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

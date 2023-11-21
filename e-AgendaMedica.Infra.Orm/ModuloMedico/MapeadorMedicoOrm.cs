@@ -19,6 +19,8 @@ namespace e_AgendaMedica.Infra.Orm.ModuloMedico
 
             builder.Property(x => x.Id).ValueGeneratedNever();
 
+            builder.Property(x => x.Nome).IsRequired();
+
             builder.Property(x => x.Crm).IsRequired();
 
         }

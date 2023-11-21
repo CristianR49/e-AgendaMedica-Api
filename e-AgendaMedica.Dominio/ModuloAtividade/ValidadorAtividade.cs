@@ -9,6 +9,9 @@ namespace e_AgendaMedica.Dominio.ModuloAtividade
             RuleFor(x => x.Data)
                 .NotNull().NotEmpty();
 
+            RuleFor(x => x.DataConclusao)
+                .NotNull().NotEmpty();
+
             RuleFor(x => x.HorarioInicio)
                 .NotNull().NotEmpty();
 

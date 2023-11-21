@@ -4,6 +4,7 @@
     {
         public class EditarMedicoViewModel
         {
+            public string Nome { get; set; }
             public string Crm { get; set; }
         }
     }

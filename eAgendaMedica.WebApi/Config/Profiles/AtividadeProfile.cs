@@ -12,8 +12,10 @@ namespace eAgendaMedica.WebApi.Config.Profiles
         {
             CreateMap<Atividade, ListarAtividadeViewModel>()
                 .ForMember(destino => destino.Data, opt => opt.MapFrom(origem => origem.Data.ToShortDateString()))
-                            .ForMember(destino => destino.HorarioInicio, opt => opt.MapFrom(origem => origem.HorarioInicio.ToString(@"hh\:mm")))
-                            .ForMember(destino => destino.HorarioTermino, opt => opt.MapFrom(origem => origem.HorarioTermino.ToString(@"hh\:mm")));
+                .ForMember(destino => destino.DataConclusao, opt => opt.MapFrom(origem => origem.DataConclusao.ToShortDateString()))
+                .ForMember(destino => destino.HorarioInicio, opt => opt.MapFrom(origem => origem.HorarioInicio.ToString(@"hh\:mm")))
+                .ForMember(destino => destino.HorarioTermino, opt => opt.MapFrom(origem => origem.HorarioTermino.ToString(@"hh\:mm")))
+                .ForMember(destino => destino.NomesMedicos, opt => opt.MapFrom(origem => origem.Medicos.Select(x => x.Nome)));
 
             CreateMap<Atividade, VisualizarAtividadeViewModel>();
 

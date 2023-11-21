@@ -16,6 +16,8 @@ namespace e_AgendaMedica.Infra.Orm.ModuloAtividade
 
             builder.Property(x => x.Data).IsRequired();
 
+            builder.Property(x => x.DataConclusao).IsRequired();
+
             builder.Property(x => x.HorarioInicio).IsRequired();
 
             builder.Property(x => x.HorarioTermino).IsRequired();
