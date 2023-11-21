@@ -23,6 +23,11 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
         {
             var resultadoValidacao = ValidarMedico(medico);
 
+            bool crmRepetido = TestarCrmRepetido(medico.Crm);
+
+            if (crmRepetido)
+                return Result.Fail("Esse CRM já está registrado");
+
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
 
@@ -33,9 +38,29 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
             return Result.Ok(medico);
         }
 
+        private bool TestarCrmRepetido(string crmCriado)
+        {
+            foreach (var medico in repositorioMedico.SelecionarTodosAsync().Result)
+            {
+                if (medico.Crm == crmCriado)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public async Task<Result<Medico>> EditarAsync(Medico medico)
         {
             var resultadoValidacao = ValidarMedico(medico);
+
+            bool crmRepetido = TestarCrmRepetido(medico.Crm);
+
+            if (crmRepetido)
+                return Result.Fail("Esse CRM já está registrado");
+
+            if (resultadoValidacao.IsFailed)
+                return Result.Fail(resultadoValidacao.Errors);
 
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
