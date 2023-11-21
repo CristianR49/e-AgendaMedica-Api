@@ -7,7 +7,6 @@ using eAgendaMedica.Aplicacao.ModuloAtividade;
 using eAgendaMedica.Aplicacao.ModuloMedico;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System.Text.RegularExpressions;
 
 namespace eAgendaMedica.ConsoleApp
 {
@@ -15,59 +14,42 @@ namespace eAgendaMedica.ConsoleApp
     {
         static void Main(string[] args)
         {
-            //Medico medico = new Medico("33333-CC");
+            Medico medico = new Medico("33333-CC");
 
-            //DbContextOptionsBuilder<eAgendaMedicaDbContext> optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
+            DbContextOptionsBuilder<eAgendaMedicaDbContext> optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
 
-            //IConfiguration configuracao = new ConfigurationBuilder()
-            //    .SetBasePath(Directory.GetCurrentDirectory())
-            //    .AddJsonFile("appsettings.json")
-            //    .Build();
+            IConfiguration configuracao = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-            //var connectionString = configuracao.GetConnectionString("SqlServer");
+            var connectionString = configuracao.GetConnectionString("SqlServer");
 
-            //optionsBuilder.UseSqlServer(connectionString);
+            optionsBuilder.UseSqlServer(connectionString);
+            
+            eAgendaMedicaDbContext dbContext = new eAgendaMedicaDbContext(optionsBuilder.Options);
 
-            //eAgendaMedicaDbContext dbContext = new eAgendaMedicaDbContext(optionsBuilder.Options);
+            List<Medico> medicos = new List<Medico>();
 
-            //List<Medico> medicos = new List<Medico>();
+            medicos.Add(medico);
 
-            //medicos.Add(medico);
+            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
-            //Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            dbContext.Add(medico);
 
-            //dbContext.Add(medico);
+            //var repositorioAtividade = new RepositorioAtividadeOrm(dbContext);
 
-            ////var repositorioAtividade = new RepositorioAtividadeOrm(dbContext);
+            //ServicoAtividade servicoAtividade = new ServicoAtividade(repositorioAtividade, dbContext);
 
-            ////ServicoAtividade servicoAtividade = new ServicoAtividade(repositorioAtividade, dbContext);
+            
 
+            //servicoMedico.InserirAsync(medico);
 
+            
 
-            ////servicoMedico.InserirAsync(medico);
+            //servicoAtividade.InserirAsync(atividade);
 
-
-
-            ////servicoAtividade.InserirAsync(atividade);
-
-            //dbContext.SaveChanges();
-
-            string input = "11111-AA";
-
-            // Padrão da expressão regular
-            string pattern = @"^\d{5}-[A-Z]{2}$";
-
-            // Verificar se a string atende ao padrão
-            bool match = Regex.IsMatch(input, pattern);
-
-            if (match)
-            {
-                Console.WriteLine("A string está no formato desejado.");
-            }
-            else
-            {
-                Console.WriteLine("A string não está no formato desejado.");
-            }
+            dbContext.SaveChanges();
         }
     }
 }

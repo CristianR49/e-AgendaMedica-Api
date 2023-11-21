@@ -17,8 +17,7 @@ namespace e_AgendaMedica.Dominio.ModuloAtividade
 
             RuleFor(x => x.TipoAtividade)
                 .NotNull()
-                .NotEmpty()
-                .IsInEnum();
+                .NotEmpty();
 
             RuleFor(x => x.Medicos)
                 .NotEmpty().Must(x => x.Count >= 1)

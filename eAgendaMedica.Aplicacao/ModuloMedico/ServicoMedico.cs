@@ -1,5 +1,7 @@
 ﻿using e_AgendaMedica.Dominio.Compartilhado;
+using e_AgendaMedica.Dominio.ModuloAtividade;
 using e_AgendaMedica.Dominio.ModuloMedico;
+using e_AgendaMedica.Infra.Orm.ModuloAtividade;
 using FluentResults;
 
 namespace eAgendaMedica.Aplicacao.ModuloMedico
@@ -8,11 +10,13 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
     {
         public readonly IRepositorioMedico repositorioMedico;
         private readonly IContextoPersistencia contextoPersistencia;
+        private readonly IRepositorioAtividade repositorioAtividade;
 
-        public ServicoMedico(IRepositorioMedico repositorioMedico, IContextoPersistencia contextoPersistencia)
+        public ServicoMedico(IRepositorioMedico repositorioMedico, IContextoPersistencia contextoPersistencia, IRepositorioAtividade repositorioAtividade)
         {
             this.repositorioMedico = repositorioMedico;
             this.contextoPersistencia = contextoPersistencia;
+            this.repositorioAtividade = repositorioAtividade;
         }
 
         public async Task<Result<Medico>> InserirAsync(Medico medico)
@@ -47,11 +51,35 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
         {
             var medico = await repositorioMedico.SelecionarPorIdAsync(id);
 
+            bool estaRegistrado = VerificarSeEstaEmAtividade(medico);
+
+            if (estaRegistrado)
+            {
+                return Result.Fail("Este médico está registrado em uma atividade!");
+            }
+
             repositorioMedico.Excluir(medico);
 
             await contextoPersistencia.GravarAsync();
 
             return Result.Ok();
+        }
+
+        private bool VerificarSeEstaEmAtividade(Medico medico)
+        {
+            List<Atividade> atividades = repositorioAtividade.SelecionarTodosAsync().Result;
+
+            bool estaRegistrado = false;
+
+            foreach (var atividade in atividades)
+            {
+                if (atividade.Medicos.Contains(medico))
+                {
+                    estaRegistrado = true;
+                }
+            }
+
+            return estaRegistrado;
         }
 
         public async Task<Result<List<Medico>>> SelecionarTodosAsync()

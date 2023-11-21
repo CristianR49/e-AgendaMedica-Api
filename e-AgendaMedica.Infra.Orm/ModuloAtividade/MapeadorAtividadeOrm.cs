@@ -1,4 +1,5 @@
-﻿using e_AgendaMedica.Dominio.ModuloAtividade;
+﻿
+using e_AgendaMedica.Dominio.ModuloAtividade;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

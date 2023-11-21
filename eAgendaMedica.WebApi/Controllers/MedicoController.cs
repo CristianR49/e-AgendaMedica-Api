@@ -50,7 +50,7 @@ namespace eAgendaMedica.WebApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Editar(Guid id, InserirMedicoViewModel viewModel)
+        public async Task<IActionResult> Editar(Guid id, EditarMedicoViewModel viewModel)
         {
             var medicoResult = await servicoMedico.SelecionarPorIdAsync(id);
 

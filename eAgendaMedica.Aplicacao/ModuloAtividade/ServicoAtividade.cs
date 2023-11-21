@@ -44,8 +44,10 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
             return Result.Ok(atividade);
         }
 
-        public async Task<Result> ExcluirAsync(Atividade atividade)
+        public async Task<Result> ExcluirAsync(Guid id)
         {
+            var atividade = await repositorioAtividade.SelecionarPorIdAsync(id);
+
             repositorioAtividade.Excluir(atividade);
 
             await contextoPersistencia.GravarAsync();

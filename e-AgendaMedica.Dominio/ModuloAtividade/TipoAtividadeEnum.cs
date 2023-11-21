@@ -2,7 +2,7 @@
 {
     public enum TipoAtividadeEnum
     {
-        Consulta = 0,
-        Cirurgia = 1
+        Consulta = 1,
+        Cirurgia = 2
     }
 }

@@ -8,6 +8,14 @@ namespace e_AgendaMedica.Infra.Orm.ModuloMedico
     {
         public RepositorioMedicoOrm(IContextoPersistencia dbContext) : base(dbContext)
         {
+
+            
+
+        }
+
+        public List<Medico> SelecionarMuitos(List<Guid> idsMedicosSelecionados)
+        {
+            return registros.Where(medico => idsMedicosSelecionados.Contains(medico.Id)).ToList();
         }
     }
 }

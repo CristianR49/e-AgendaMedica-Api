@@ -2,9 +2,9 @@
 {
     public partial class MedicoViewModel
     {
-        public class EditarMedicoViewModel : FormsMedicoViewModel
+        public class EditarMedicoViewModel
         {
-            
+            public string Crm { get; set; }
         }
     }
 }
