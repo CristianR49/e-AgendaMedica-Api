@@ -3,10 +3,10 @@ using e_AgendaMedica.Dominio.ModuloMedico;
 
 namespace e_AgendaMedica.Dominio.ModuloAtividade
 {
-    public class Atividade : Entidade
+    public class Atividade : Entidade<Atividade>
     {
         public DateTime Data { get; set; }
-        public DateTime DataConclusao { get; }
+        public DateTime DataConclusao { get; set; }
         public TimeSpan HorarioInicio { get; set; }
         public TimeSpan HorarioTermino { get; set; }
         public TipoAtividadeEnum TipoAtividade { get; set; }
@@ -19,6 +19,11 @@ namespace e_AgendaMedica.Dominio.ModuloAtividade
             HorarioTermino = horarioTermino;
             TipoAtividade = tipoAtividade;
             Medicos = medicos;
+        }
+
+        public Atividade(Guid id,DateTime data, DateTime dataConclusao, TimeSpan horarioInicio, TimeSpan horarioTermino, TipoAtividadeEnum tipoAtividade, List<Medico> medicos) : this(data, dataConclusao, horarioInicio, horarioTermino, tipoAtividade, medicos)
+        {
+            Id = id;
         }
         public Atividade()
         {

@@ -2,7 +2,7 @@
 
 namespace e_AgendaMedica.Dominio.ModuloMedico
 {
-    public class Medico : Entidade
+    public class Medico : Entidade<Medico>
     {
         public string Nome { get; set; }
         public string Crm { get; set; }
@@ -10,7 +10,13 @@ namespace e_AgendaMedica.Dominio.ModuloMedico
         {
             Nome = nome;
             Crm = crm;
-         }
+        }
+
+        public Medico(Guid id, string nome, string crm) : this(nome,crm)
+        {
+            Id = id;
+        }
+
         public Medico()
         {
 

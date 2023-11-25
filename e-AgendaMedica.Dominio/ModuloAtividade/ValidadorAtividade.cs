@@ -2,7 +2,7 @@
 
 namespace e_AgendaMedica.Dominio.ModuloAtividade
 {
-    public class ValidadorAtividade : AbstractValidator<Atividade>
+    public class ValidadorAtividade : AbstractValidator<Atividade>, IValidadorAtividade
     {
         public ValidadorAtividade()
         {

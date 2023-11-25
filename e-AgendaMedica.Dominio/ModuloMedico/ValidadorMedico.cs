@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace e_AgendaMedica.Dominio.ModuloMedico
 {
-    public class ValidadorMedico : AbstractValidator<Medico>
+    public class ValidadorMedico : AbstractValidator<Medico>, IValidadorMedico
     {
         public ValidadorMedico() 
         {
             RuleFor(x => x.Nome)
                 .NotNull()
+                .MinimumLength(3)
                 .NotEmpty();
 
             RuleFor(x => x.Crm)

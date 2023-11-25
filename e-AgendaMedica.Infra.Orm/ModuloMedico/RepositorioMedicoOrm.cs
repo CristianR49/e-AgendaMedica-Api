@@ -9,8 +9,16 @@ namespace e_AgendaMedica.Infra.Orm.ModuloMedico
         public RepositorioMedicoOrm(IContextoPersistencia dbContext) : base(dbContext)
         {
 
-            
+        }
 
+        public Medico? SelecionarPorNome(string nome)
+        {
+            return registros.FirstOrDefault(x => x.Nome == nome);
+        }
+
+        public Medico? SelecionarPorCrm(string crm)
+        {
+            return registros.FirstOrDefault(x => x.Crm == crm);
         }
 
         public List<Medico> SelecionarMuitos(List<Guid> idsMedicosSelecionados)

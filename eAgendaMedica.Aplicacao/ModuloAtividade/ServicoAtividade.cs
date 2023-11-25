@@ -1,7 +1,5 @@
 ﻿using e_AgendaMedica.Dominio.Compartilhado;
 using e_AgendaMedica.Dominio.ModuloAtividade;
-using e_AgendaMedica.Dominio.ModuloAtividade;
-using e_AgendaMedica.Dominio.ModuloMedico;
 using FluentResults;
 
 namespace eAgendaMedica.Aplicacao.ModuloAtividade
@@ -10,11 +8,13 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
     {
         public readonly IRepositorioAtividade repositorioAtividade;
         private readonly IContextoPersistencia contextoPersistencia;
+        private readonly IValidadorAtividade validador;
 
-        public ServicoAtividade(IRepositorioAtividade repositorioAtividade, IContextoPersistencia contextoPersistencia)
+        public ServicoAtividade(IRepositorioAtividade repositorioAtividade, IContextoPersistencia contextoPersistencia, IValidadorAtividade validador)
         {
             this.repositorioAtividade = repositorioAtividade;
             this.contextoPersistencia = contextoPersistencia;
+            this.validador = validador;
         }
 
         public async Task<Result<Atividade>> InserirAsync(Atividade atividade)
@@ -24,7 +24,7 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
 
-            Result resultadoApenasUmMedico = ConsultaTemApenasUmMedico(atividade);
+            Result resultadoApenasUmMedico = ConsultaTemNoMinimoUmMedico(atividade);
 
             if (resultadoApenasUmMedico.IsFailed)
                 return resultadoApenasUmMedico;
@@ -42,7 +42,7 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
             return Result.Ok(atividade);
         }
 
-        private Result ConsultaTemApenasUmMedico(Atividade atividadeCriada)
+        private Result ConsultaTemNoMinimoUmMedico(Atividade atividadeCriada)
         {
             if (atividadeCriada.TipoAtividade == TipoAtividadeEnum.Consulta && atividadeCriada.Medicos.Count > 1)
             {
@@ -58,54 +58,52 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
                 return Result.Fail("Uma atividade não pode começar e acabar dois dias depois");
             }
 
-            foreach (var atividade in repositorioAtividade.SelecionarTodosAsync().Result)
+            var atividades = repositorioAtividade.SelecionarTodos();
+
+            if (atividades != null)
             {
-                foreach (var medico in atividadeCriada.Medicos)
+                foreach (var atividade in atividades)
                 {
-                    if (atividade.Medicos.Contains(medico))
+                    foreach (var medico in atividadeCriada.Medicos)
                     {
-                        bool mesmoDia = atividadeCriada.Data == atividade.Data
-                            && atividadeCriada.DataConclusao == atividade.DataConclusao
-                            && atividadeCriada.DataConclusao == atividadeCriada.Data;
-
-                        bool horariosMarcadosChocam = 
-                        atividade.HorarioInicio <= atividadeCriada.HorarioInicio
-                        && atividade.HorarioTermino >= atividadeCriada.HorarioInicio
-                        || atividade.HorarioInicio <= atividadeCriada.HorarioTermino
-                        && atividade.HorarioTermino >= atividadeCriada.HorarioTermino
-                        || atividade.HorarioInicio >= atividadeCriada.HorarioInicio
-                        && atividade.HorarioTermino <= atividadeCriada.HorarioTermino
-                        || atividadeCriada.DataConclusao == atividadeCriada.Data
-                        && atividade.HorarioInicio <= atividadeCriada.HorarioInicio
-                        && atividade.HorarioTermino >= atividadeCriada.HorarioTermino;
-
-                        if (mesmoDia && horariosMarcadosChocam)
+                        if (atividade.Medicos.Contains(medico))
                         {
-                            return Result.Fail($"O médico {medico.Nome} já está marcado para esse horário! Data: {atividade.Data} ({atividade.HorarioInicio} - {atividade.HorarioTermino})");
+                            bool mesmoDia = atividadeCriada.Data == atividade.Data
+                                && atividadeCriada.DataConclusao == atividade.DataConclusao
+                                && atividadeCriada.DataConclusao == atividadeCriada.Data;
+
+                            bool horariosMarcadosChocam =
+                            atividade.HorarioInicio <= atividadeCriada.HorarioInicio
+                            && atividade.HorarioTermino >= atividadeCriada.HorarioInicio
+                            || atividade.HorarioInicio <= atividadeCriada.HorarioTermino
+                            && atividade.HorarioTermino >= atividadeCriada.HorarioTermino
+                            || atividade.HorarioInicio >= atividadeCriada.HorarioInicio
+                            && atividade.HorarioTermino <= atividadeCriada.HorarioTermino
+                            || atividadeCriada.DataConclusao == atividadeCriada.Data
+                            && atividade.HorarioInicio <= atividadeCriada.HorarioInicio
+                            && atividade.HorarioTermino >= atividadeCriada.HorarioTermino;
+
+                            if (mesmoDia && horariosMarcadosChocam)
+                            {
+                                return Result.Fail($"O médico {medico.Nome} já está marcado para esse horário! Data: {atividade.Data} ({atividade.HorarioInicio} - {atividade.HorarioTermino})");
+                            }
+
+
+                            TimeSpan tempoDescanco = TimeSpan.Parse("00:20");
+
+                            if (atividade.TipoAtividade == TipoAtividadeEnum.Cirurgia)
+                            {
+                                tempoDescanco = TimeSpan.Parse("4:00");
+                            }
+
+                            bool horarioDescancoChoca = atividade.HorarioTermino + tempoDescanco <= atividadeCriada.HorarioInicio;
+
+                            if (horarioDescancoChoca)
+                            {
+                                return Result.Fail($"O médico {medico.Nome} estará descançando nesse horário e voltará a ativa as {atividade.HorarioTermino + tempoDescanco + TimeSpan.Parse("00:01")}");
+                            }
+
                         }
-
-                        //bool diasDiferentes = atividadeCriada.Data == atividade.Data
-                        //    && atividadeCriada.DataConclusao == atividade.DataConclusao
-                        //    && atividadeCriada.DataConclusao != atividadeCriada.Data;
-
-                        //bool horariosMarcadosChocamMadrugada = atividadeCriada.Data == atividade.Data
-                        //    && atividadeCriada.DataConclusao == atividade.DataConclusao;
-
-
-                        TimeSpan tempoDescanco = TimeSpan.Parse("00:20");
-
-                        if (atividade.TipoAtividade == TipoAtividadeEnum.Cirurgia)
-                        {
-                            tempoDescanco = TimeSpan.Parse("4:00");
-                        }
-
-                        bool horarioDescancoChoca = atividade.HorarioTermino + tempoDescanco <= atividadeCriada.HorarioInicio;
-
-                        if (horarioDescancoChoca)
-                        {
-                            return Result.Fail($"O médico {medico.Nome} estará descançando nesse horário e voltará a ativa as {atividade.HorarioTermino + tempoDescanco + TimeSpan.Parse("00:01")}");
-                        }
-
                     }
                 }
             }
@@ -119,7 +117,7 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
 
-            Result resultadoApenasUmMedico = ConsultaTemApenasUmMedico(atividade);
+            Result resultadoApenasUmMedico = ConsultaTemNoMinimoUmMedico(atividade);
 
             if (resultadoApenasUmMedico.IsFailed)
                 return resultadoApenasUmMedico;
@@ -138,13 +136,20 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
 
         public async Task<Result> ExcluirAsync(Guid id)
         {
-            var atividade = await repositorioAtividade.SelecionarPorIdAsync(id);
+            var atividade = repositorioAtividade.SelecionarPorId(id);
 
-            repositorioAtividade.Excluir(atividade);
+            if (repositorioAtividade.Existe(atividade))
+            {
+                repositorioAtividade.Excluir(atividade);
 
-            await contextoPersistencia.GravarAsync();
+                await contextoPersistencia.GravarAsync();
 
-            return Result.Ok();
+                return Result.Ok();
+            }
+            else
+            {
+                return Result.Fail("Essa atividade não existe!");
+            }
         }
 
         public async Task<Result<List<Atividade>>> SelecionarTodosAsync()
@@ -163,15 +168,16 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
 
         private Result ValidarAtividade(Atividade atividade)
         {
-            ValidadorAtividade validador = new ValidadorAtividade();
-
             var resultadoValidacao = validador.Validate(atividade);
 
             List<Error> erros = new List<Error>();
 
-            foreach (var erro in resultadoValidacao.Errors)
+            if (resultadoValidacao != null)
             {
-                erros.Add(new Error(erro.ErrorMessage));
+                foreach (var erro in resultadoValidacao.Errors)
+                {
+                    erros.Add(new Error(erro.ErrorMessage));
+                }
             }
 
             if (erros.Any())

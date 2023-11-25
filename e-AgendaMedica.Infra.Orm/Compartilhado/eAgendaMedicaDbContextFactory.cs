@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.Extensions.Configuration;
 
 namespace e_AgendaMedica.Infra.Orm.Compartilhado
 {
@@ -9,7 +10,14 @@ namespace e_AgendaMedica.Infra.Orm.Compartilhado
         {
             DbContextOptionsBuilder<eAgendaMedicaDbContext> optionsBuilder = new DbContextOptionsBuilder<eAgendaMedicaDbContext>();
 
-            optionsBuilder.UseSqlServer(@"Data Source=(LOCALDB)\MSSQLLOCALDB;Initial Catalog=eAgendaMedica;Integrated Security=True");
+            IConfiguration configuracao = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var connectionString = configuracao.GetConnectionString("SqlServer");
+
+            optionsBuilder.UseSqlServer(connectionString);
 
             eAgendaMedicaDbContext dbContext = new eAgendaMedicaDbContext(optionsBuilder.Options);
 

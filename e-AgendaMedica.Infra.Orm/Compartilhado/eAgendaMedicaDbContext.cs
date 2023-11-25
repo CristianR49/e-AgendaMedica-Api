@@ -26,5 +26,11 @@ namespace e_AgendaMedica.Infra.Orm.Compartilhado
             await SaveChangesAsync();
             return true;
         }
+
+        public bool Gravar()
+        {
+            SaveChanges();
+            return true;
+        }
     }
 }

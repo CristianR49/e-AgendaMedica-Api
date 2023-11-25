@@ -1,7 +1,6 @@
 ﻿using e_AgendaMedica.Dominio.Compartilhado;
 using e_AgendaMedica.Dominio.ModuloAtividade;
 using e_AgendaMedica.Dominio.ModuloMedico;
-using e_AgendaMedica.Infra.Orm.ModuloAtividade;
 using FluentResults;
 
 namespace eAgendaMedica.Aplicacao.ModuloMedico
@@ -11,22 +10,19 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
         public readonly IRepositorioMedico repositorioMedico;
         private readonly IContextoPersistencia contextoPersistencia;
         private readonly IRepositorioAtividade repositorioAtividade;
+        private readonly IValidadorMedico validador;
 
-        public ServicoMedico(IRepositorioMedico repositorioMedico, IContextoPersistencia contextoPersistencia, IRepositorioAtividade repositorioAtividade)
+        public ServicoMedico(IRepositorioMedico repositorioMedico, IContextoPersistencia contextoPersistencia, IRepositorioAtividade repositorioAtividade, IValidadorMedico validador)
         {
             this.repositorioMedico = repositorioMedico;
             this.contextoPersistencia = contextoPersistencia;
             this.repositorioAtividade = repositorioAtividade;
+            this.validador = validador;
         }
 
         public async Task<Result<Medico>> InserirAsync(Medico medico)
         {
             var resultadoValidacao = ValidarMedico(medico);
-
-            Result crmRepetido = TestarCrmRepetido(medico.Crm);
-
-            if (crmRepetido.IsFailed)
-                return crmRepetido;
 
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
@@ -38,29 +34,23 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
             return Result.Ok(medico);
         }
 
-        private Result TestarCrmRepetido(string crmCriado)
+        private Result TestarCrmRepetido(Medico medico)
         {
-            foreach (var medico in repositorioMedico.SelecionarTodosAsync().Result)
+            Medico? medicoEncontrado = repositorioMedico.SelecionarPorCrm(medico.Crm);
+
+            if (medicoEncontrado != null &&
+                medicoEncontrado.Id != medico.Id &&
+                medicoEncontrado.Crm == medico.Crm)
             {
-                if (medico.Crm == crmCriado)
-                {
-                    return Result.Fail("Esse CRM já está registrado");
-                }
+                return Result.Fail("Esse CRM já está sendo usado por um médico");
             }
+
             return Result.Ok();
         }
 
         public async Task<Result<Medico>> EditarAsync(Medico medico)
         {
             var resultadoValidacao = ValidarMedico(medico);
-
-            Result crmRepetido = TestarCrmRepetido(medico.Crm);
-
-            if (crmRepetido.IsFailed)
-                return crmRepetido;
-
-            if (resultadoValidacao.IsFailed)
-                return Result.Fail(resultadoValidacao.Errors);
 
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
@@ -74,37 +64,45 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
 
         public async Task<Result> ExcluirAsync(Guid id)
         {
-            var medico = await repositorioMedico.SelecionarPorIdAsync(id);
+            var medico = repositorioMedico.SelecionarPorId(id);
 
-            bool estaRegistrado = VerificarSeEstaEmAtividade(medico);
-
-            if (estaRegistrado)
+            if (repositorioMedico.Existe(medico))
             {
-                return Result.Fail("Este médico está registrado em uma atividade!");
+
+                var resultadoValidacao = VerificarSeEstaEmAtividade(medico);
+
+                if (resultadoValidacao.IsFailed)
+                    return Result.Fail(resultadoValidacao.Errors);
+
+
+                repositorioMedico.Excluir(medico);
+
+                await contextoPersistencia.GravarAsync();
+
+                return Result.Ok();
             }
-
-            repositorioMedico.Excluir(medico);
-
-            await contextoPersistencia.GravarAsync();
-
-            return Result.Ok();
+            else 
+            {
+                return Result.Fail("Esse médico não existe!");
+            }
         }
 
-        private bool VerificarSeEstaEmAtividade(Medico medico)
+        private Result VerificarSeEstaEmAtividade(Medico medico)
         {
-            List<Atividade> atividades = repositorioAtividade.SelecionarTodosAsync().Result;
+            List<Atividade> atividades = repositorioAtividade.SelecionarTodos();
 
-            bool estaRegistrado = false;
-
-            foreach (var atividade in atividades)
+            if (atividades != null)
             {
-                if (atividade.Medicos.Contains(medico))
+                foreach (var atividade in atividades)
                 {
-                    estaRegistrado = true;
+                    if (atividade.Medicos.Contains(medico))
+                    {
+                        return Result.Fail("Este médico está registrado em uma atividade!");
+                    }
                 }
             }
 
-            return estaRegistrado;
+            return Result.Ok();
         }
 
         public async Task<Result<List<Medico>>> SelecionarTodosAsync()
@@ -123,16 +121,21 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
 
         private Result ValidarMedico(Medico medico)
         {
-            ValidadorMedico validador = new ValidadorMedico();
 
             var resultadoValidacao = validador.Validate(medico);
 
             List<Error> erros = new List<Error>();
 
-            foreach (var erro in resultadoValidacao.Errors)
+            if (resultadoValidacao != null)
             {
-                erros.Add(new Error(erro.ErrorMessage));
+                foreach (var erro in resultadoValidacao.Errors)
+                {
+                    erros.Add(new Error(erro.ErrorMessage));
+                }
             }
+
+            if (TestarCrmRepetido(medico).IsFailed)
+                erros.Add(new Error("Esse CRM já está sendo usado por um médico"));
 
             if (erros.Any())
                 return Result.Fail(erros.ToArray());

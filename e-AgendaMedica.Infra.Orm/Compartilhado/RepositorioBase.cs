@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace e_AgendaMedica.Infra.Orm.Compartilhado
 {
-    public class RepositorioBase<TEntidade> : IRepositorioBase<TEntidade> where TEntidade : Entidade
+    public class RepositorioBase<TEntidade> : IRepositorioBase<TEntidade> where TEntidade : Entidade<TEntidade>
     {
         protected eAgendaMedicaDbContext dbContext;
         protected DbSet<TEntidade> registros;
@@ -22,6 +22,13 @@ namespace e_AgendaMedica.Infra.Orm.Compartilhado
         public async Task<bool> InserirAsync(TEntidade registro)
         {
             await registros.AddAsync(registro);
+
+            return true;
+        }
+
+        public bool Inserir(TEntidade registro)
+        {
+            registros.Add(registro);
 
             return true;
         }
@@ -41,9 +48,24 @@ namespace e_AgendaMedica.Infra.Orm.Compartilhado
             return await registros.SingleOrDefaultAsync(x => x.Id == id);
         }
 
+        public virtual TEntidade SelecionarPorId(Guid id)
+        {
+            return registros.SingleOrDefault(x => x.Id == id);
+        }
+
         public virtual async Task<List<TEntidade>> SelecionarTodosAsync()
         {
             return await registros.ToListAsync();
+        }
+
+        public List<TEntidade> SelecionarTodos()
+        {
+            return registros.ToList();
+        }
+
+        public bool Existe(TEntidade registro)
+        {
+            return registros.Contains(registro);
         }
     }
 }
