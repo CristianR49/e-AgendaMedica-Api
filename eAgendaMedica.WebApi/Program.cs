@@ -12,15 +12,27 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.OpenApi.Writers;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace eAgendaMedica.WebApi
 {
     public class Program
     {
-        
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
 
             builder.Services.AddControllers()
                 .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
@@ -33,6 +45,9 @@ namespace eAgendaMedica.WebApi
             });
 
             builder.Services.AddTransient<FormsMedicosMappingAction>();
+
+            builder.Services.AddTransient<IValidadorAtividade, ValidadorAtividade>();
+            builder.Services.AddTransient<IValidadorMedico, ValidadorMedico>();
 
             builder.Services.AddTransient<IRepositorioAtividade, RepositorioAtividadeOrm>();
             builder.Services.AddTransient<ServicoAtividade>();
@@ -63,6 +78,7 @@ namespace eAgendaMedica.WebApi
 
             app.UseAuthorization();
 
+            app.UseCors();
 
             app.MapControllers();
 
