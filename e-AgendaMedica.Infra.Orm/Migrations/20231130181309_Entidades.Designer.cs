@@ -12,8 +12,8 @@ using e_AgendaMedica.Infra.Orm.Compartilhado;
 namespace e_AgendaMedica.Infra.Orm.Migrations
 {
     [DbContext(typeof(eAgendaMedicaDbContext))]
-    [Migration("20231123200702_MigrationInicial")]
-    partial class MigrationInicial
+    [Migration("20231130181309_Entidades")]
+    partial class Entidades
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,9 +46,6 @@ namespace e_AgendaMedica.Infra.Orm.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DataConclusao")
                         .HasColumnType("datetime2");
 
                     b.Property<TimeSpan>("HorarioInicio")

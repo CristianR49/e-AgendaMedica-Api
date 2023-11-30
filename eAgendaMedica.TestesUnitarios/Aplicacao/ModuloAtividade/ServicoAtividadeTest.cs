@@ -28,14 +28,14 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
             servicoAtividade = new ServicoAtividade(repositorioAtividadeMoq.Object, ContextoPersistenciaMoq.Object, validadorMoq.Object);
             medicos = new List<Medico>();
             medicos.Add(new Medico("João", "4444-TM"));
-            atividade = new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
         }
 
         [TestMethod]
         public async Task Deve_inserir_atividade_caso_ela_for_valida()
         {
             //arrange
-            atividade = new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             //action
             var resultado = await servicoAtividade.InserirAsync(atividade);
@@ -74,7 +74,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
                 .Returns(() =>
                 {
                     var atividades = new List<Atividade>();
-                    atividades.Add(new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos));
+                    atividades.Add(new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos));
                     return atividades;
                 });
 
@@ -90,7 +90,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
         public async Task Deve_editar_atividade_caso_ela_for_valida()
         {
             //arrange           
-            atividade = new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             //action
             var resultado = await servicoAtividade.EditarAsync(atividade);
@@ -126,7 +126,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
         {
             Guid id = Guid.NewGuid();
             //arrange
-            var atividade = new Atividade(id, new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            var atividade = new Atividade(id, new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             repositorioAtividadeMoq.Setup(x => x.SelecionarPorId(atividade.Id))
                .Returns(() =>
@@ -153,7 +153,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
         {
             //arrange
 
-            var atividade = new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            var atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             repositorioAtividadeMoq.Setup(x => x.Existe(atividade))
                .Returns(() =>

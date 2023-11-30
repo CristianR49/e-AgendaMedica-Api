@@ -210,7 +210,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao
                            var medicos = new List<Medico>();
                            medicos.Add(medico);
                            var atividades = new List<Atividade>();
-                           atividades.Add(new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos));
+                           atividades.Add(new Atividade( new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos));
                            return atividades;
                        });
 

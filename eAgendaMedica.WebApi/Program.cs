@@ -23,16 +23,16 @@ namespace eAgendaMedica.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(
-                builder =>
-                {
-                    builder.WithOrigins("http://localhost:4200")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-                });
-            });
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(
+            //    builder =>
+            //    {
+            //        builder.WithOrigins("http://localhost:4200")
+            //        .AllowAnyHeader()
+            //        .AllowAnyMethod();
+            //    });
+            //});
 
             builder.Services.AddControllers()
                 .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
@@ -78,7 +78,7 @@ namespace eAgendaMedica.WebApi
 
             app.UseAuthorization();
 
-            app.UseCors();
+            //app.UseCors();
 
             app.MapControllers();
 

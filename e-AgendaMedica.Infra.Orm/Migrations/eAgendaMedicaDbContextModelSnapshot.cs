@@ -45,9 +45,6 @@ namespace e_AgendaMedica.Infra.Orm.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DataConclusao")
-                        .HasColumnType("datetime2");
-
                     b.Property<TimeSpan>("HorarioInicio")
                         .HasColumnType("time");
 

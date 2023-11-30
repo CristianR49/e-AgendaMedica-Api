@@ -40,7 +40,7 @@ namespace eAgendaMedica.ConsoleApp
 
             medicos.Add(medico);
 
-            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             dbContext.Add(medico);
 

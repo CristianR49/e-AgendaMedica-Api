@@ -1,11 +1,6 @@
 ﻿using e_AgendaMedica.Dominio.ModuloAtividade;
 using e_AgendaMedica.Dominio.ModuloMedico;
 using FluentValidation.TestHelper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace eAgendaMedica.TestesUnitarios.Dominio.ModuloAtividade
 {
@@ -37,19 +32,6 @@ namespace eAgendaMedica.TestesUnitarios.Dominio.ModuloAtividade
 
             //assert
             resultado.ShouldNotHaveValidationErrorFor(x => x.Data);
-        }
-
-        [TestMethod]
-        public void DataConclusao_atividade_deve_ser_valido()
-        {
-            //arrange
-            Atividade.DataConclusao = DateTime.Parse("10/2/2003");
-
-            //action
-            var resultado = Validador.TestValidate(Atividade);
-
-            //assert
-            resultado.ShouldNotHaveValidationErrorFor(x => x.DataConclusao);
         }
 
         [TestMethod]
