@@ -13,6 +13,8 @@ using Microsoft.OpenApi.Writers;
 using System.Text.Json.Serialization;
 using System.Text.Json;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
+using eAgendaMedica.WebApi.Config;
 
 namespace eAgendaMedica.WebApi
 {
@@ -23,19 +25,26 @@ namespace eAgendaMedica.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddDefaultPolicy(
-            //    builder =>
-            //    {
-            //        builder.WithOrigins("http://localhost:4200")
-            //        .AllowAnyHeader()
-            //        .AllowAnyMethod();
-            //    });
-            //});
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:4200")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
 
             builder.Services.AddControllers()
                 .AddJsonOptions(opt => opt.JsonSerializerOptions.Converters.Add(new TimeSpanToStringConverter()));
+
+            builder.Services.Configure<ApiBehaviorOptions>(config =>
+            {
+                config.SuppressModelStateInvalidFilter = true;
+            });
+                
+
 
             var connectionString = builder.Configuration.GetConnectionString("SqlServer");
 
@@ -67,6 +76,7 @@ namespace eAgendaMedica.WebApi
 
             var app = builder.Build();
 
+            app.UseMiddleware<ManipuladorExcecoes>();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -78,7 +88,7 @@ namespace eAgendaMedica.WebApi
 
             app.UseAuthorization();
 
-            //app.UseCors();
+            app.UseCors();
 
             app.MapControllers();
 

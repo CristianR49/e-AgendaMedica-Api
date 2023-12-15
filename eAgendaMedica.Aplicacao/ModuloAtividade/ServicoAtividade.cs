@@ -139,7 +139,9 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
                     {
                         if (atividade.Medicos.Contains(medico))
                         {
-                            bool mesmoDia = atividadeCriada.Data == atividade.Data;
+
+                            bool mesmoDia = atividadeCriada.Data.Date == atividade.Data.Date;
+
 
                             bool horariosMarcadosChocam =
                             atividadeCriada.HorarioInicio >= atividade.HorarioInicio
@@ -151,27 +153,63 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
 
                             if (mesmoDia && horariosMarcadosChocam)
                             {
-                                return Result.Fail($"O médico {medico.Nome} já está marcado para esse horário! Data: {atividade.Data} ({atividade.HorarioInicio} - {atividade.HorarioTermino})");
+                                return Result.Fail($"O médico {medico.Nome} já está marcado para esse horário! Data: {atividade.Data.Date} ({atividade.HorarioInicio} - {atividade.HorarioTermino})");
                             }
 
+                            //
 
-                            TimeSpan tempoDescanco = TimeSpan.Zero;
-                            
+                            TimeSpan tempoDescancoAtividade = TimeSpan.Zero;
 
                             if (atividade.TipoAtividade == TipoAtividadeEnum.Cirurgia)
                             {
-                                tempoDescanco = TimeSpan.Parse("4:00");
+                                tempoDescancoAtividade = TimeSpan.Parse("4:00");
                             }
                             else if (atividade.TipoAtividade == TipoAtividadeEnum.Consulta)
                             {
-                                tempoDescanco = TimeSpan.Parse("00:20");
+                                tempoDescancoAtividade = TimeSpan.Parse("00:20");
                             }
 
-                            bool horarioDescancoChoca = atividade.HorarioTermino + tempoDescanco >= atividadeCriada.HorarioInicio;
+                            TimeSpan descancoDepoisDoTerminoAtividade = atividade.HorarioTermino + tempoDescancoAtividade;
 
-                            if (horarioDescancoChoca)
+                            
+                            TimeSpan tempoDescancoAtividadeCriada = TimeSpan.Zero;
+
+                            if (atividade.TipoAtividade == TipoAtividadeEnum.Cirurgia)
                             {
-                                return Result.Fail($"O médico {medico.Nome} estará descançando nesse horário e voltará a ativa as {atividade.HorarioTermino + tempoDescanco + TimeSpan.Parse("00:01")}");
+                                tempoDescancoAtividadeCriada = TimeSpan.Parse("4:00");
+                            }
+                            else if (atividade.TipoAtividade == TipoAtividadeEnum.Consulta)
+                            {
+                                tempoDescancoAtividadeCriada = TimeSpan.Parse("00:20");
+                            }
+
+                            TimeSpan descancoDepoisDoTerminoAtividadeCriada = atividadeCriada.HorarioTermino + tempoDescancoAtividadeCriada;
+
+                            //
+
+                            bool atividadeCriadaDescancoChoca =
+                                atividade.HorarioInicio <= descancoDepoisDoTerminoAtividadeCriada
+                                && descancoDepoisDoTerminoAtividadeCriada <= atividade.HorarioTermino
+                                || atividade.HorarioTermino <= descancoDepoisDoTerminoAtividadeCriada
+                                && descancoDepoisDoTerminoAtividadeCriada <= descancoDepoisDoTerminoAtividade
+                                || descancoDepoisDoTerminoAtividade <= descancoDepoisDoTerminoAtividadeCriada;
+
+                            //
+
+                            if (mesmoDia && atividadeCriada.HorarioTermino < atividade.HorarioInicio && atividadeCriadaDescancoChoca)
+                            {
+                                return Result.Fail($"O médico {medico.Nome} não terminaria seu descanço as {descancoDepoisDoTerminoAtividadeCriada} antes de outra atividade começar as {atividade.HorarioInicio}");
+                            }
+
+                            //
+
+                            bool atividadeDescancoChoca = 
+                                atividadeCriada.HorarioTermino >= descancoDepoisDoTerminoAtividade
+                                || descancoDepoisDoTerminoAtividade >= atividadeCriada.HorarioTermino;
+
+                            if (mesmoDia && atividadeCriada.HorarioInicio <= descancoDepoisDoTerminoAtividade && atividadeDescancoChoca)
+                            {
+                                return Result.Fail($"O médico {medico.Nome} estará descançando nesse horário e voltará a ativa as {atividade.HorarioTermino + tempoDescancoAtividade + TimeSpan.Parse("00:01")}");
                             }
 
                         }

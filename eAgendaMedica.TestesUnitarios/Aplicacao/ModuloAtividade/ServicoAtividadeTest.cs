@@ -66,7 +66,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
         }
 
         [TestMethod]
-        public async Task Nao_deve_inserir_atividade_caso_medico_ja_esteja_com_o_mesmo_horario_marcado()
+        public async Task Nao_deve_inserir_atividade_caso_medico_ja_esteja_com_choque_de_horario()
         {
             //arrange
 
@@ -74,7 +74,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
                 .Returns(() =>
                 {
                     var atividades = new List<Atividade>();
-                    atividades.Add(new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos));
+                    atividades.Add(new Atividade(new DateTime(1555, 5, 20), new TimeSpan(19, 0, 0), new TimeSpan(21, 0, 0), TipoAtividadeEnum.Cirurgia, medicos));
                     return atividades;
                 });
 
@@ -84,6 +84,52 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
             //assert 
             resultado.Should().BeFailure();
             repositorioAtividadeMoq.Verify(x => x.InserirAsync(atividade), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task Nao_deve_inserir_atividade_caso_medico_ja_esteja_com_choque_de_descanco_antes()
+        {
+            //arrange
+
+            repositorioAtividadeMoq.Setup(x => x.SelecionarTodos())
+                .Returns(() =>
+                {
+                    var atividades = new List<Atividade>();
+                    atividades.Add(new Atividade(new DateTime(1555, 5, 20), new TimeSpan(19, 0, 0), new TimeSpan(21, 0, 0), TipoAtividadeEnum.Consulta, medicos));
+                    return atividades;
+                });
+
+            var atividadeCriada = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(18, 0, 0), new TimeSpan(18, 50, 0), TipoAtividadeEnum.Consulta, medicos);
+
+            //action
+            var resultado = await servicoAtividade.InserirAsync(atividadeCriada);
+
+            //assert 
+            resultado.Should().BeFailure();
+            repositorioAtividadeMoq.Verify(x => x.InserirAsync(atividadeCriada), Times.Never());
+        }
+
+        [TestMethod]
+        public async Task Nao_deve_inserir_atividade_caso_medico_ja_esteja_com_choque_de_descanco_depois()
+        {
+            //arrange
+
+            repositorioAtividadeMoq.Setup(x => x.SelecionarTodos())
+                .Returns(() =>
+                {
+                    var atividades = new List<Atividade>();
+                    atividades.Add(new Atividade(new DateTime(1555, 5, 20), new TimeSpan(19, 0, 0), new TimeSpan(21, 0, 0), TipoAtividadeEnum.Consulta, medicos));
+                    return atividades;
+                });
+
+            var atividadeCriada = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(21, 15, 0), new TimeSpan(22, 00, 0), TipoAtividadeEnum.Consulta, medicos);
+
+            //action
+            var resultado = await servicoAtividade.InserirAsync(atividadeCriada);
+
+            //assert 
+            resultado.Should().BeFailure();
+            repositorioAtividadeMoq.Verify(x => x.InserirAsync(atividadeCriada), Times.Never());
         }
 
         [TestMethod]
@@ -122,7 +168,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
         }
 
         [TestMethod]
-        public async Task Deve_excluir_atividade_caso_ela_esteja_cadastrado()
+        public async Task Deve_excluir_atividade_caso_ela_esteja_cadastrada()
         {
             Guid id = Guid.NewGuid();
             //arrange
@@ -149,7 +195,7 @@ namespace eAgendaMedica.TestesUnitarios.Aplicacao.ModuloAtividade
         }
 
         [TestMethod]
-        public async Task Nao_deve_excluir_atividade_caso_ela_nao_esteja_cadastrado()
+        public async Task Nao_deve_excluir_atividade_caso_ela_nao_esteja_cadastrada()
         {
             //arrange
 

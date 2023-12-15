@@ -124,7 +124,7 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
 
             var resultadoValidacao = validador.Validate(medico);
 
-            List<Error> erros = new List<Error>();
+            List<IError> erros = new List<IError>();
 
             if (resultadoValidacao != null)
             {
@@ -134,8 +134,10 @@ namespace eAgendaMedica.Aplicacao.ModuloMedico
                 }
             }
 
-            if (TestarCrmRepetido(medico).IsFailed)
-                erros.Add(new Error("Esse CRM já está sendo usado por um médico"));
+            Result resultado = TestarCrmRepetido(medico);
+
+            if (resultado.IsFailed)
+                erros.Add(resultado.Errors[0]);
 
             if (erros.Any())
                 return Result.Fail(erros.ToArray());

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using e_AgendaMedica.Dominio.ModuloMedico;
+using eAgendaMedica.WebApi.ViewModel.ModuloMedico;
 using static eAgendaMedica.WebApi.ViewModel.ModuloMedico.MedicoViewModel;
 
 namespace eAgendaMedica.WebApi.Config.Profiles

@@ -20,6 +20,8 @@ namespace eAgendaMedica.WebApi.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(List<ListarAtividadeViewModel>), 200)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> SelecionarTodos()
         {
             var atividadesResult = await servicoAtividade.SelecionarTodosAsync();
@@ -30,9 +32,15 @@ namespace eAgendaMedica.WebApi.Controllers
         }
 
         [HttpGet("visualizacao-completa/{id}")]
+        [ProducesResponseType(typeof(VisualizarAtividadeViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> SelecionarPorId(Guid id)
         {
             var atividadeResult = await servicoAtividade.SelecionarPorIdAsync(id);
+
+            if (atividadeResult.IsFailed)
+                return NotFound(atividadeResult.Errors);
 
             var viewModel = mapeador.Map<VisualizarAtividadeViewModel>(atividadeResult.Value);
 
@@ -40,31 +48,59 @@ namespace eAgendaMedica.WebApi.Controllers
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(InserirAtividadeViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Inserir(InserirAtividadeViewModel viewModel)
         {
             var atividade = mapeador.Map<Atividade>(viewModel);
 
-            await servicoAtividade.InserirAsync(atividade);
+            var atividadeResult = await servicoAtividade.InserirAsync(atividade);
+
+            if (atividadeResult.IsFailed)
+                return BadRequest(atividadeResult.Errors);
 
             return Ok(viewModel);
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(EditarAtividadeViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Editar(Guid id, EditarAtividadeViewModel viewModel)
         {
-            var atividadeResult = await servicoAtividade.SelecionarPorIdAsync(id);
+            var selecaoAtividadeResult = await servicoAtividade.SelecionarPorIdAsync(id);
 
-            var atividade = mapeador.Map(viewModel, atividadeResult.Value);
+            if (selecaoAtividadeResult.IsFailed)
+                return NotFound(selecaoAtividadeResult.Errors);
 
-            await servicoAtividade.EditarAsync(atividade);
+            var atividade = mapeador.Map(viewModel, selecaoAtividadeResult.Value);
+
+            var atividadeResult = await servicoAtividade.EditarAsync(atividade);
+
+            if (atividadeResult.IsFailed)
+                return BadRequest(atividadeResult.Errors);
 
             return Ok(viewModel);
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Excluir(Guid id)
         {
-            await servicoAtividade.ExcluirAsync(id);
+
+            var selecaoAtividadeResult = await servicoAtividade.SelecionarPorIdAsync(id);
+
+            if (selecaoAtividadeResult.IsFailed)
+                return NotFound(selecaoAtividadeResult.Errors);
+
+            var atividadeResult = await servicoAtividade.ExcluirAsync(id);
+
+            if (atividadeResult.IsFailed)
+                return BadRequest(atividadeResult.Errors);
 
             return Ok();
         }
