@@ -24,17 +24,6 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
 
-            Result resultadoApenasUmMedico = ConsultaTemNoMinimoUmMedico(atividade);
-
-            if (resultadoApenasUmMedico.IsFailed)
-                return resultadoApenasUmMedico;
-
-            Result resultadoChoqueHorarios = ValidarHorarios(atividade);
-
-            if (resultadoChoqueHorarios.IsFailed)
-                return resultadoChoqueHorarios;
-
-
             await this.repositorioAtividade.InserirAsync(atividade);
 
             await contextoPersistencia.GravarAsync();
@@ -48,16 +37,6 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
 
             if (resultadoValidacao.IsFailed)
                 return Result.Fail(resultadoValidacao.Errors);
-
-            Result resultadoApenasUmMedico = ConsultaTemNoMinimoUmMedico(atividade);
-
-            if (resultadoApenasUmMedico.IsFailed)
-                return resultadoApenasUmMedico;
-
-            Result resultadoChoqueHorarios = ValidarHorarios(atividade);
-
-            if (resultadoChoqueHorarios.IsFailed)
-                return resultadoChoqueHorarios;
 
             repositorioAtividade.Editar(atividade);
 
@@ -112,13 +91,23 @@ namespace eAgendaMedica.Aplicacao.ModuloAtividade
                 }
             }
 
+            Result resultadoApenasUmMedico = ConsultaTemNoMaximoUmMedico(atividade);
+
+            if (resultadoApenasUmMedico.IsFailed)
+                erros.Add(new Error(resultadoApenasUmMedico.Errors[0].Message));
+
+            Result resultadoChoqueHorarios = ValidarHorarios(atividade);
+
+            if (resultadoChoqueHorarios.IsFailed)
+                erros.Add(new Error(resultadoChoqueHorarios.Errors[0].Message));
+
             if (erros.Any())
                 return Result.Fail(erros.ToArray());
 
             return Result.Ok();
         }
 
-        private Result ConsultaTemNoMinimoUmMedico(Atividade atividadeCriada)
+        private Result ConsultaTemNoMaximoUmMedico(Atividade atividadeCriada)
         {
             if (atividadeCriada.TipoAtividade == TipoAtividadeEnum.Consulta && atividadeCriada.Medicos.Count > 1)
             {

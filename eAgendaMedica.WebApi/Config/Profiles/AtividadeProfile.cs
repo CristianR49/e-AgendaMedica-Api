@@ -14,9 +14,15 @@ namespace eAgendaMedica.WebApi.Config.Profiles
                 .ForMember(destino => destino.Data, opt => opt.MapFrom(origem => origem.Data.ToShortDateString()))
                 .ForMember(destino => destino.HorarioInicio, opt => opt.MapFrom(origem => origem.HorarioInicio.ToString(@"hh\:mm")))
                 .ForMember(destino => destino.HorarioTermino, opt => opt.MapFrom(origem => origem.HorarioTermino.ToString(@"hh\:mm")))
-                .ForMember(destino => destino.NomesMedicos, opt => opt.MapFrom(origem => origem.Medicos.Select(x => x.Nome)));
+                .ForMember(destino => destino.NomesMedicos, opt => opt.MapFrom(origem => origem.Medicos.Select(x => x.Nome).ToList()));
 
-            CreateMap<Atividade, VisualizarAtividadeViewModel>();
+            CreateMap<InserirAtividadeViewModel, Atividade>()
+                .ForMember(destino => destino.Data, opt => opt.MapFrom(origem => origem.Data.ToShortDateString()))
+                .ForMember(destino => destino.HorarioInicio, opt => opt.MapFrom(origem => origem.HorarioInicio.ToString(@"hh\:mm")))
+                .ForMember(destino => destino.HorarioTermino, opt => opt.MapFrom(origem => origem.HorarioTermino.ToString(@"hh\:mm")))
+                .ForMember(destino => destino.TipoAtividade, opt => opt.MapFrom(origem => (TipoAtividadeEnum)origem.TipoAtividade))
+                .ForMember(destino => destino.Medicos, opt => opt.Ignore())
+                .AfterMap<FormsMedicosMappingAction>();
 
             CreateMap<InserirAtividadeViewModel, Atividade>()
                 .ForMember(destino => destino.Medicos, opt => opt.Ignore())

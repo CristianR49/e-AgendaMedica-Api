@@ -12,7 +12,7 @@ using e_AgendaMedica.Infra.Orm.Compartilhado;
 namespace e_AgendaMedica.Infra.Orm.Migrations
 {
     [DbContext(typeof(eAgendaMedicaDbContext))]
-    [Migration("20231130181309_Entidades")]
+    [Migration("20231219201051_Entidades")]
     partial class Entidades
     {
         /// <inheritdoc />

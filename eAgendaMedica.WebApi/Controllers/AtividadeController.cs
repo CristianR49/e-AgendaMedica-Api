@@ -53,14 +53,24 @@ namespace eAgendaMedica.WebApi.Controllers
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Inserir(InserirAtividadeViewModel viewModel)
         {
-            var atividade = mapeador.Map<Atividade>(viewModel);
+            try 
+            { 
+                var atividade = mapeador.Map<Atividade>(viewModel);
 
-            var atividadeResult = await servicoAtividade.InserirAsync(atividade);
+                var atividadeResult = await servicoAtividade.InserirAsync(atividade);
 
-            if (atividadeResult.IsFailed)
-                return BadRequest(atividadeResult.Errors);
+                if (atividadeResult.IsFailed)
+                    return BadRequest(atividadeResult.Errors);
 
-            return Ok(viewModel);
+                return Ok(viewModel);
+
+            }
+            catch (Exception exc)
+            {
+                return StatusCode(500, exc.Message);
+            }
+
+
         }
 
         [HttpPut("{id}")]

@@ -40,21 +40,9 @@ namespace eAgendaMedica.ConsoleApp
 
             medicos.Add(medico);
 
-            Atividade atividade = new Atividade(new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
+            Atividade atividade = new Atividade("Cirurgia na perna", new DateTime(1555, 5, 20), new TimeSpan(20, 0, 0), new TimeSpan(22, 0, 0), TipoAtividadeEnum.Cirurgia, medicos);
 
             dbContext.Add(medico);
-
-            //var repositorioAtividade = new RepositorioAtividadeOrm(dbContext);
-
-            //ServicoAtividade servicoAtividade = new ServicoAtividade(repositorioAtividade, dbContext);
-
-
-
-            //servicoMedico.InserirAsync(medico);
-
-
-
-            //servicoAtividade.InserirAsync(atividade);
 
             dbContext.SaveChanges();
         }

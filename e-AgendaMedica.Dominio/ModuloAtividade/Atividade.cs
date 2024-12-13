@@ -19,7 +19,7 @@ namespace e_AgendaMedica.Dominio.ModuloAtividade
             Medicos = medicos;
         }
 
-        public Atividade(Guid id,DateTime data, TimeSpan horarioInicio, TimeSpan horarioTermino, TipoAtividadeEnum tipoAtividade, List<Medico> medicos) : this(data, horarioInicio, horarioTermino, tipoAtividade, medicos)
+        public Atividade(Guid id, DateTime data, TimeSpan horarioInicio, TimeSpan horarioTermino, TipoAtividadeEnum tipoAtividade, List<Medico> medicos) : this(data, horarioInicio, horarioTermino, tipoAtividade, medicos)
         {
             Id = id;
         }

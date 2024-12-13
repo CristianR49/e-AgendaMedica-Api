@@ -21,6 +21,7 @@ namespace eAgendaMedica.TestesUnitarios.Dominio.ModuloAtividade
             Validador = new ValidadorAtividade();
         }
 
+
         [TestMethod]
         public void Data_atividade_deve_ser_valido()
         {
@@ -74,7 +75,7 @@ namespace eAgendaMedica.TestesUnitarios.Dominio.ModuloAtividade
         }
 
         [TestMethod]
-        public void Medicos_atividade_deve_pelo_menos_um()
+        public void Medicos_atividade_deve_ter_pelo_menos_um()
         {
             //arrange
 
